@@ -34,9 +34,25 @@ with app.app_context():
     venue2 = Venue(name="Quinta Verde", address="Ruta 9 km 20", created_at=datetime.utcnow())
     db.session.add_all([venue1, venue2])
 
-    # Bookings
-    booking1 = Booking(client_id=client1.id, service_id=service1.id, venue_id=venue1.id, date=datetime(2025, 10, 1), status="confirmado", created_at=datetime.utcnow())
-    booking2 = Booking(client_id=client2.id, service_id=service2.id, venue_id=venue2.id, date=datetime(2025, 11, 15), status="pendiente", created_at=datetime.utcnow())
+    db.session.commit()  # Commit para asegurar que los IDs estén disponibles
+
+    # Bookings (asegúrate que el modelo Booking tenga los campos client_id, service_id, venue_id, date, status, created_at)
+    booking1 = Booking(
+        client_id=client1.id,
+        service_id=service1.id,
+        venue_id=venue1.id,
+        date=datetime(2025, 10, 1),
+        status="confirmado",
+        
+    )
+    booking2 = Booking(
+        client_id=client2.id,
+        service_id=service2.id,
+        venue_id=venue2.id,
+        date=datetime(2025, 11, 15),
+        status="pendiente",
+        
+    )
     db.session.add_all([booking1, booking2])
 
     # Imágenes de galería
@@ -50,8 +66,8 @@ with app.app_context():
     db.session.add_all([lead1, lead2])
 
     # Logs de auditoría
-    log1 = AuditLog(action="create_user", user_id=1, details="Usuario admin creado", timestamp=datetime.utcnow())
-    log2 = AuditLog(action="create_booking", user_id=2, details="Reserva creada por Juan", timestamp=datetime.utcnow())
+    log1 = AuditLog(action="create_user", user_id=user1.id, details="Usuario admin creado", timestamp=datetime.utcnow())
+    log2 = AuditLog(action="create_booking", user_id=user2.id, details="Reserva creada por Juan", timestamp=datetime.utcnow())
     db.session.add_all([log1, log2])
 
     db.session.commit()
