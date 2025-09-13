@@ -3,7 +3,11 @@ Main Flask application initialization.
 """
 from flask import Flask
 from extensions import db, ma
+from dotenv import load_dotenv
 import os
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 # Importar todos los modelos para registrar las tablas
 from models.user import User
@@ -18,11 +22,10 @@ from models.audit_log import AuditLog
 # Flask app initialization
 app = Flask(__name__)
 
-# SQLite database configuration usando ruta absoluta
-instance_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
-db_path = os.path.join(instance_dir, 'gauchos.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Configuración desde .env
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS') == 'True'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 db.init_app(app)
 ma.init_app(app)
