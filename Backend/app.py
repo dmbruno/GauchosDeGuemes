@@ -49,6 +49,9 @@ app.register_blueprint(gallery_image_bp)
 app.register_blueprint(contact_lead_bp)
 app.register_blueprint(audit_log_bp)
 
+# Crear carpeta instance si no existe
+os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
+
 # Crear tablas siempre que se inicialice la app
 with app.app_context():
     db.create_all()

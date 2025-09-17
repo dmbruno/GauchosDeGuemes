@@ -18,20 +18,29 @@ def client():
             db.session.commit()
         yield client
 
-def test_list_clients(client):
-    response = client.get('/clients')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert isinstance(data, list)
-    assert any(cl['name'] == 'ClienteTest' for cl in data)
-
 def test_create_client(client):
-    payload = {"name": "NuevoCliente", "email": "nuevo@cliente.com"}
+    payload = {
+        "name": "Cliente Test",
+        "email": "test@mail.com",
+        "phone": "+5491112345678"
+    }
     response = client.post('/clients', json=payload)
     assert response.status_code == 201
     data = response.get_json()
-    assert data['name'] == "NuevoCliente"
-    assert data['email'] == "nuevo@cliente.com"
+    assert data["name"] == "Cliente Test"
+    assert data["email"] == "test@mail.com"
+    assert data["phone"] == "+5491112345678"
+
+def test_list_clients(client):
+    client.post('/clients', json={
+        "name": "Cliente Test",
+        "email": "test@mail.com",
+        "phone": "+5491112345678"
+    })
+    response = client.get('/clients')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert any(c["phone"] == "+5491112345678" for c in data)
 
 def test_update_client(client):
     response = client.post('/clients', json={"name": "Cliente", "email": "cliente@mail.com"})
