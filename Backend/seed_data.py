@@ -14,61 +14,121 @@ from models.audit_log import AuditLog
 from datetime import datetime
 
 with app.app_context():
+    # Limpiar todas las tablas antes de insertar datos
+    db.drop_all()
+    db.create_all()
+    
     # Usuarios
     user1 = User(username="admin", email="admin@example.com", is_admin=True, created_at=datetime.utcnow())
     user2 = User(username="juan", email="juan@example.com", is_admin=False, created_at=datetime.utcnow())
     db.session.add_all([user1, user2])
 
     # Clientes
-    client1 = Client(name="Cliente Uno", email="cliente1@example.com", created_at=datetime.utcnow())
-    client2 = Client(name="Cliente Dos", email="cliente2@example.com", created_at=datetime.utcnow())
-    db.session.add_all([client1, client2])
+    client1 = Client(
+        dni="12345678",
+        first_name="María",
+        last_name="González",
+        phone="+5493875051111",
+        email="maria.gonzalez@example.com",
+        created_at=datetime.utcnow()
+    )
+    client2 = Client(
+        dni="87654321",
+        first_name="Juan",
+        last_name="Pérez",
+        phone="+5493875051112",
+        email="juan.perez@example.com",
+        created_at=datetime.utcnow()
+    )
+    client3 = Client(
+        dni="11223344",
+        first_name="Ana",
+        last_name="Rodríguez",
+        phone="+5493875051113",
+        email="ana.rodriguez@example.com",
+        created_at=datetime.utcnow()
+    )
+    client4 = Client(
+        dni="44332211",
+        first_name="Carlos",
+        last_name="López",
+        phone="+5493875051114",
+        email="carlos.lopez@example.com",
+        created_at=datetime.utcnow()
+    )
+    db.session.add_all([client1, client2, client3, client4])
 
     # Servicios
-    service1 = Service(name="Catering", type="Comida", details="Buffet libre", created_at=datetime.utcnow())
-    service2 = Service(name="Fotografía", type="Foto", details="Cobertura profesional", created_at=datetime.utcnow())
-    db.session.add_all([service1, service2])
+    service1 = Service(name="Catering Premium", type="Comida", details="Buffet libre con carnes, ensaladas y postres", created_at=datetime.utcnow())
+    service2 = Service(name="Fotografía Profesional", type="Foto", details="Cobertura completa del evento con álbum digital", created_at=datetime.utcnow())
+    service3 = Service(name="Música y DJ", type="Entretenimiento", details="Equipo de sonido profesional con DJ", created_at=datetime.utcnow())
+    service4 = Service(name="Decoración Floral", type="Decoración", details="Arreglos florales y centros de mesa", created_at=datetime.utcnow())
+    service5 = Service(name="Video Institucional", type="Video", details="Grabación y edición de video del evento", created_at=datetime.utcnow())
+    db.session.add_all([service1, service2, service3, service4, service5])
 
     # Venues
-    venue1 = Venue(name="Salon Fiesta", address="Av. Principal 123", created_at=datetime.utcnow())
-    venue2 = Venue(name="Quinta Verde", address="Ruta 9 km 20", created_at=datetime.utcnow())
-    db.session.add_all([venue1, venue2])
+    venue1 = Venue(name="Salon Dorado", address="Av. San Martín 1250, Salta", created_at=datetime.utcnow())
+    venue2 = Venue(name="Quinta Los Pinos", address="Ruta Provincial 51 km 8, Cerrillos", created_at=datetime.utcnow())
+    venue3 = Venue(name="Club Atlético Central", address="Belgrano 890, Salta Capital", created_at=datetime.utcnow())
+    venue4 = Venue(name="Estancia El Mollar", address="Camino a San Lorenzo km 12", created_at=datetime.utcnow())
+    db.session.add_all([venue1, venue2, venue3, venue4])
 
     db.session.commit()  # Commit para asegurar que los IDs estén disponibles
 
-    # Bookings (asegúrate que el modelo Booking tenga los campos client_id, service_id, venue_id, date, status, created_at)
+    # Bookings
     booking1 = Booking(
         client_id=client1.id,
         service_id=service1.id,
         venue_id=venue1.id,
-        date=datetime(2025, 10, 1),
-        status="confirmado",
-        
+        date=datetime(2025, 12, 15),
+        status="confirmado"
     )
     booking2 = Booking(
         client_id=client2.id,
         service_id=service2.id,
         venue_id=venue2.id,
-        date=datetime(2025, 11, 15),
-        status="pendiente",
-        
+        date=datetime(2025, 11, 30),
+        status="pendiente"
     )
-    db.session.add_all([booking1, booking2])
+    booking3 = Booking(
+        client_id=client3.id,
+        service_id=service3.id,
+        venue_id=venue3.id,
+        date=datetime(2025, 12, 20),
+        status="confirmado"
+    )
+    booking4 = Booking(
+        client_id=client4.id,
+        service_id=service4.id,
+        venue_id=venue4.id,
+        date=datetime(2026, 1, 10),
+        status="cotización"
+    )
+    db.session.add_all([booking1, booking2, booking3, booking4])
 
     # Imágenes de galería
-    img1 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/200", description="Foto del salón", created_at=datetime.utcnow())
-    img2 = GalleryImage(venue_id=venue2.id, url="https://picsum.photos/201", description="Foto de la quinta", created_at=datetime.utcnow())
-    db.session.add_all([img1, img2])
+    img1 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=1", description="Salón Dorado - Vista principal", created_at=datetime.utcnow())
+    img2 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=2", description="Salón Dorado - Pista de baile", created_at=datetime.utcnow())
+    img3 = GalleryImage(venue_id=venue2.id, url="https://picsum.photos/800/600?random=3", description="Quinta Los Pinos - Jardín exterior", created_at=datetime.utcnow())
+    img4 = GalleryImage(venue_id=venue2.id, url="https://picsum.photos/800/600?random=4", description="Quinta Los Pinos - Quincho", created_at=datetime.utcnow())
+    img5 = GalleryImage(venue_id=venue3.id, url="https://picsum.photos/800/600?random=5", description="Club Central - Salón de eventos", created_at=datetime.utcnow())
+    img6 = GalleryImage(venue_id=venue4.id, url="https://picsum.photos/800/600?random=6", description="Estancia El Mollar - Vista panorámica", created_at=datetime.utcnow())
+    db.session.add_all([img1, img2, img3, img4, img5, img6])
 
     # Leads de contacto
-    lead1 = ContactLead(name="Pedro", email="pedro@mail.com", message="Quiero cotizar un evento", lead_metadata="web", created_at=datetime.utcnow())
-    lead2 = ContactLead(name="Ana", email="ana@mail.com", message="Consulta por disponibilidad", lead_metadata="web", created_at=datetime.utcnow())
-    db.session.add_all([lead1, lead2])
+    lead1 = ContactLead(name="Pedro Martínez", email="pedro.martinez@gmail.com", message="Hola, necesito cotizar un evento para 150 personas el 20 de diciembre. ¿Tienen disponibilidad?", lead_metadata="whatsapp", created_at=datetime.utcnow())
+    lead2 = ContactLead(name="Ana Fernández", email="ana.fernandez@hotmail.com", message="Consulta por disponibilidad para boda en marzo 2026", lead_metadata="web", created_at=datetime.utcnow())
+    lead3 = ContactLead(name="Roberto Silva", email="rsilva@empresa.com", message="Evento corporativo fin de año, necesito presupuesto urgente", lead_metadata="instagram", created_at=datetime.utcnow())
+    lead4 = ContactLead(name="Laura Gutiérrez", email="laura.gut@yahoo.com", message="15 años para mi hija, quiero ver opciones de quintas", lead_metadata="facebook", created_at=datetime.utcnow())
+    db.session.add_all([lead1, lead2, lead3, lead4])
 
     # Logs de auditoría
-    log1 = AuditLog(action="create_user", user_id=user1.id, details="Usuario admin creado", timestamp=datetime.utcnow())
-    log2 = AuditLog(action="create_booking", user_id=user2.id, details="Reserva creada por Juan", timestamp=datetime.utcnow())
-    db.session.add_all([log1, log2])
+    log1 = AuditLog(action="create_user", user_id=user1.id, details="Usuario admin creado en el sistema", timestamp=datetime.utcnow())
+    log2 = AuditLog(action="create_booking", user_id=user2.id, details="Reserva creada por Juan para cliente María González", timestamp=datetime.utcnow())
+    log3 = AuditLog(action="update_client", user_id=user1.id, details="Actualización de datos de contacto de cliente Juan Pérez", timestamp=datetime.utcnow())
+    log4 = AuditLog(action="create_lead", user_id=user1.id, details="Nuevo lead desde WhatsApp: Pedro Martínez", timestamp=datetime.utcnow())
+    log5 = AuditLog(action="confirm_booking", user_id=user2.id, details="Reserva confirmada para María González en Salon Dorado", timestamp=datetime.utcnow())
+    db.session.add_all([log1, log2, log3, log4, log5])
 
     db.session.commit()
     print("Datos ficticios insertados correctamente en todas las tablas.")

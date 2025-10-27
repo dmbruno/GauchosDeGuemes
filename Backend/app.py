@@ -2,6 +2,7 @@
 Main Flask application initialization.
 """
 from flask import Flask
+from flask_cors import CORS
 from extensions import db, ma
 from dotenv import load_dotenv
 import os
@@ -21,6 +22,12 @@ from models.audit_log import AuditLog
 
 # Flask app initialization
 app = Flask(__name__)
+
+CORS(app, 
+     origins=["http://localhost:5173", "http://127.0.0.1:5173"], 
+     supports_credentials=True)
+
+
 
 # Configuración desde .env
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
@@ -57,4 +64,6 @@ with app.app_context():
     db.create_all()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port=5050)
+
+
