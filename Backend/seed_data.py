@@ -67,11 +67,8 @@ with app.app_context():
     db.session.add_all([service1, service2, service3, service4, service5])
 
     # Venues
-    venue1 = Venue(name="Salon Dorado", address="Av. San Martín 1250, Salta", created_at=datetime.utcnow())
-    venue2 = Venue(name="Quinta Los Pinos", address="Ruta Provincial 51 km 8, Cerrillos", created_at=datetime.utcnow())
-    venue3 = Venue(name="Club Atlético Central", address="Belgrano 890, Salta Capital", created_at=datetime.utcnow())
-    venue4 = Venue(name="Estancia El Mollar", address="Camino a San Lorenzo km 12", created_at=datetime.utcnow())
-    db.session.add_all([venue1, venue2, venue3, venue4])
+    venue1 = Venue(name="Gauchos De Güemes", address="Circunvalación Oeste S/N Salta - Argentina", created_at=datetime.utcnow())
+    db.session.add(venue1)
 
     db.session.commit()  # Commit para asegurar que los IDs estén disponibles
 
@@ -81,38 +78,42 @@ with app.app_context():
         service_id=service1.id,
         venue_id=venue1.id,
         date=datetime(2025, 12, 15),
-        status="confirmado"
+        status="confirmado",
+        guests_count=150
     )
     booking2 = Booking(
         client_id=client2.id,
         service_id=service2.id,
-        venue_id=venue2.id,
+        venue_id=venue1.id,
         date=datetime(2025, 11, 30),
-        status="pendiente"
+        status="pendiente",
+        guests_count=100
     )
     booking3 = Booking(
         client_id=client3.id,
         service_id=service3.id,
-        venue_id=venue3.id,
+        venue_id=venue1.id,
         date=datetime(2025, 12, 20),
-        status="confirmado"
+        status="confirmado",
+        guests_count=200
     )
     booking4 = Booking(
         client_id=client4.id,
         service_id=service4.id,
-        venue_id=venue4.id,
+        venue_id=venue1.id,
         date=datetime(2026, 1, 10),
-        status="cotización"
+        status="cotización",
+        guests_count=80
     )
     db.session.add_all([booking1, booking2, booking3, booking4])
 
     # Imágenes de galería
-    img1 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=1", description="Salón Dorado - Vista principal", created_at=datetime.utcnow())
-    img2 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=2", description="Salón Dorado - Pista de baile", created_at=datetime.utcnow())
-    img3 = GalleryImage(venue_id=venue2.id, url="https://picsum.photos/800/600?random=3", description="Quinta Los Pinos - Jardín exterior", created_at=datetime.utcnow())
-    img4 = GalleryImage(venue_id=venue2.id, url="https://picsum.photos/800/600?random=4", description="Quinta Los Pinos - Quincho", created_at=datetime.utcnow())
-    img5 = GalleryImage(venue_id=venue3.id, url="https://picsum.photos/800/600?random=5", description="Club Central - Salón de eventos", created_at=datetime.utcnow())
-    img6 = GalleryImage(venue_id=venue4.id, url="https://picsum.photos/800/600?random=6", description="Estancia El Mollar - Vista panorámica", created_at=datetime.utcnow())
+    img1 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=1", description="Gauchos De Güemes - Vista principal", created_at=datetime.utcnow())
+    img2 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=2", description="Gauchos De Güemes - Pista de baile", created_at=datetime.utcnow())
+    img3 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=3", description="Gauchos De Güemes - Jardín exterior", created_at=datetime.utcnow())
+    img4 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=4", description="Gauchos De Güemes - Salón de eventos", created_at=datetime.utcnow())
+    img5 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=5", description="Gauchos De Güemes - Quincho", created_at=datetime.utcnow())
+    img6 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=6", description="Gauchos De Güemes - Vista panorámica", created_at=datetime.utcnow())
     db.session.add_all([img1, img2, img3, img4, img5, img6])
 
     # Leads de contacto
