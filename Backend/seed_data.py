@@ -7,7 +7,7 @@ from models.user import User
 from models.client import Client
 from models.service import Service
 from models.venue import Venue
-from models.booking import Booking
+from models.booking import Booking, booking_services
 from models.gallery_image import GalleryImage
 from models.contact_lead import ContactLead
 from models.audit_log import AuditLog
@@ -72,40 +72,66 @@ with app.app_context():
 
     db.session.commit()  # Commit para asegurar que los IDs estén disponibles
 
-    # Bookings
+    # Bookings (sin service_id)
     booking1 = Booking(
         client_id=client1.id,
-        service_id=service1.id,
         venue_id=venue1.id,
         date=datetime(2025, 12, 15),
         status="confirmado",
-        guests_count=150
+        guests_count=150,
+        contact_preference="WhatsApp",
+        event_type="Boda",
+        other_services="Decoración adicional"
     )
     booking2 = Booking(
         client_id=client2.id,
-        service_id=service2.id,
         venue_id=venue1.id,
         date=datetime(2025, 11, 30),
         status="pendiente",
-        guests_count=100
+        guests_count=100,
+        contact_preference="Email",
+        event_type="Cumpleaños 50 años",
+        other_services="Torta personalizada"
     )
     booking3 = Booking(
         client_id=client3.id,
-        service_id=service3.id,
         venue_id=venue1.id,
         date=datetime(2025, 12, 20),
         status="confirmado",
-        guests_count=200
+        guests_count=200,
+        contact_preference="Llamada telefónica",
+        event_type="Evento corporativo",
+        other_services="Servicio de bar premium"
     )
     booking4 = Booking(
         client_id=client4.id,
-        service_id=service4.id,
         venue_id=venue1.id,
         date=datetime(2026, 1, 10),
         status="cotización",
-        guests_count=80
+        guests_count=80,
+        contact_preference="No especificado",
+        event_type="15 años",
+        other_services="Ninguno"
     )
     db.session.add_all([booking1, booking2, booking3, booking4])
+    db.session.commit()
+    
+    # Asignar múltiples servicios a cada booking mediante tabla intermedia
+    db.session.execute(booking_services.insert().values(booking_id=booking1.id, service_id=service1.id))  # Catering
+    db.session.execute(booking_services.insert().values(booking_id=booking1.id, service_id=service2.id))  # Fotografía
+    db.session.execute(booking_services.insert().values(booking_id=booking1.id, service_id=service3.id))  # Música y DJ
+    
+    db.session.execute(booking_services.insert().values(booking_id=booking2.id, service_id=service1.id))  # Catering
+    db.session.execute(booking_services.insert().values(booking_id=booking2.id, service_id=service4.id))  # Decoración
+    
+    db.session.execute(booking_services.insert().values(booking_id=booking3.id, service_id=service1.id))  # Catering
+    db.session.execute(booking_services.insert().values(booking_id=booking3.id, service_id=service2.id))  # Fotografía
+    db.session.execute(booking_services.insert().values(booking_id=booking3.id, service_id=service5.id))  # Video
+    
+    db.session.execute(booking_services.insert().values(booking_id=booking4.id, service_id=service3.id))  # Música
+    db.session.execute(booking_services.insert().values(booking_id=booking4.id, service_id=service4.id))  # Decoración
+    
+    db.session.commit()
 
     # Imágenes de galería
     img1 = GalleryImage(venue_id=venue1.id, url="https://picsum.photos/800/600?random=1", description="Gauchos De Güemes - Vista principal", created_at=datetime.utcnow())
