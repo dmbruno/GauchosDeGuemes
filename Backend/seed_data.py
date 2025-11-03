@@ -20,7 +20,9 @@ with app.app_context():
     
     # Usuarios
     user1 = User(username="admin", email="admin@example.com", is_admin=True, created_at=datetime.utcnow())
+    user1.set_password("admin123")
     user2 = User(username="juan", email="juan@example.com", is_admin=False, created_at=datetime.utcnow())
+    user2.set_password("juan123")
     db.session.add_all([user1, user2])
 
     # Clientes
@@ -58,13 +60,20 @@ with app.app_context():
     )
     db.session.add_all([client1, client2, client3, client4])
 
-    # Servicios
-    service1 = Service(name="Catering Premium", type="Comida", details="Buffet libre con carnes, ensaladas y postres", created_at=datetime.utcnow())
-    service2 = Service(name="Fotografía Profesional", type="Foto", details="Cobertura completa del evento con álbum digital", created_at=datetime.utcnow())
-    service3 = Service(name="Música y DJ", type="Entretenimiento", details="Equipo de sonido profesional con DJ", created_at=datetime.utcnow())
-    service4 = Service(name="Decoración Floral", type="Decoración", details="Arreglos florales y centros de mesa", created_at=datetime.utcnow())
-    service5 = Service(name="Video Institucional", type="Video", details="Grabación y edición de video del evento", created_at=datetime.utcnow())
-    db.session.add_all([service1, service2, service3, service4, service5])
+    # Servicios (solo 2 servicios disponibles)
+    service1 = Service(
+        name="Catering", 
+        type="Comida", 
+        details="Disponemos de amplia variedad para que no falte nada en tu evento", 
+        created_at=datetime.utcnow()
+    )
+    service2 = Service(
+        name="Barra de Bebidas", 
+        type="Bebidas", 
+        details="Tenemos una barra super completa para que no te tengas que ocupar de esto durante tu evento", 
+        created_at=datetime.utcnow()
+    )
+    db.session.add_all([service1, service2])
 
     # Venues
     venue1 = Venue(name="Gauchos De Güemes", address="Circunvalación Oeste S/N Salta - Argentina", created_at=datetime.utcnow())
@@ -77,7 +86,7 @@ with app.app_context():
         client_id=client1.id,
         venue_id=venue1.id,
         date=datetime(2025, 12, 15),
-        status="confirmado",
+        status="confirmada",
         guests_count=150,
         contact_preference="WhatsApp",
         event_type="Boda",
@@ -87,7 +96,7 @@ with app.app_context():
         client_id=client2.id,
         venue_id=venue1.id,
         date=datetime(2025, 11, 30),
-        status="pendiente",
+        status="solicitada",
         guests_count=100,
         contact_preference="Email",
         event_type="Cumpleaños 50 años",
@@ -97,7 +106,7 @@ with app.app_context():
         client_id=client3.id,
         venue_id=venue1.id,
         date=datetime(2025, 12, 20),
-        status="confirmado",
+        status="confirmada",
         guests_count=200,
         contact_preference="Llamada telefónica",
         event_type="Evento corporativo",
@@ -107,7 +116,7 @@ with app.app_context():
         client_id=client4.id,
         venue_id=venue1.id,
         date=datetime(2026, 1, 10),
-        status="cotización",
+        status="solicitada",
         guests_count=80,
         contact_preference="No especificado",
         event_type="15 años",
@@ -116,20 +125,16 @@ with app.app_context():
     db.session.add_all([booking1, booking2, booking3, booking4])
     db.session.commit()
     
-    # Asignar múltiples servicios a cada booking mediante tabla intermedia
+    # Asignar servicios a cada booking (solo Catering y Barra disponibles)
     db.session.execute(booking_services.insert().values(booking_id=booking1.id, service_id=service1.id))  # Catering
-    db.session.execute(booking_services.insert().values(booking_id=booking1.id, service_id=service2.id))  # Fotografía
-    db.session.execute(booking_services.insert().values(booking_id=booking1.id, service_id=service3.id))  # Música y DJ
+    db.session.execute(booking_services.insert().values(booking_id=booking1.id, service_id=service2.id))  # Barra
     
     db.session.execute(booking_services.insert().values(booking_id=booking2.id, service_id=service1.id))  # Catering
-    db.session.execute(booking_services.insert().values(booking_id=booking2.id, service_id=service4.id))  # Decoración
     
     db.session.execute(booking_services.insert().values(booking_id=booking3.id, service_id=service1.id))  # Catering
-    db.session.execute(booking_services.insert().values(booking_id=booking3.id, service_id=service2.id))  # Fotografía
-    db.session.execute(booking_services.insert().values(booking_id=booking3.id, service_id=service5.id))  # Video
+    db.session.execute(booking_services.insert().values(booking_id=booking3.id, service_id=service2.id))  # Barra
     
-    db.session.execute(booking_services.insert().values(booking_id=booking4.id, service_id=service3.id))  # Música
-    db.session.execute(booking_services.insert().values(booking_id=booking4.id, service_id=service4.id))  # Decoración
+    db.session.execute(booking_services.insert().values(booking_id=booking4.id, service_id=service2.id))  # Barra
     
     db.session.commit()
 

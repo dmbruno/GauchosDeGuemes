@@ -2,16 +2,29 @@
 CRUD endpoints for Booking entity.
 """
 from flask import Blueprint, request, jsonify
-from models.booking import Booking, BookingSchema, booking_services
+from models.booking import Booking, BookingSchema, booking_services, BOOKING_STATUSES
 from extensions import db
 
 booking_bp = Blueprint('booking_bp', __name__)
 booking_schema = BookingSchema()
 bookings_schema = BookingSchema(many=True)
 
+@booking_bp.route('/bookings/statuses', methods=['GET'])
+def get_booking_statuses():
+    """Retorna la lista de estados permitidos para las reservas"""
+    return jsonify({'statuses': BOOKING_STATUSES})
+
 @booking_bp.route('/bookings', methods=['POST'])
 def create_booking():
     data = request.get_json()
+    
+    # Validar el status si está presente (por defecto será "solicitada")
+    status = data.get('status', 'solicitada')
+    if status not in BOOKING_STATUSES:
+        return jsonify({
+            'error': f'Invalid status. Allowed values: {", ".join(BOOKING_STATUSES)}'
+        }), 400
+    data['status'] = status
     
     # Extraer service_ids del JSON
     service_ids = data.pop('service_ids', [])
@@ -51,26 +64,39 @@ def update_booking(booking_id):
     
     data = request.get_json()
     
-    # Extraer service_ids del JSON
-    service_ids = data.pop('service_ids', [])
+    # Validar el status si está presente
+    if 'status' in data and data['status'] not in BOOKING_STATUSES:
+        return jsonify({
+            'error': f'Invalid status. Allowed values: {", ".join(BOOKING_STATUSES)}'
+        }), 400
     
-    # Actualizar datos del booking
-    booking = booking_schema.load(data, instance=booking, session=db.session, partial=True)
+    # Extraer service_ids del JSON si están presentes
+    service_ids = data.pop('service_ids', None)
     
-    # Actualizar servicios: eliminar los anteriores y agregar los nuevos
-    # Eliminar todas las relaciones anteriores
-    db.session.execute(
-        booking_services.delete().where(booking_services.c.booking_id == booking_id)
-    )
+    # Actualizar campos del booking
+    for key, value in data.items():
+        if hasattr(booking, key):
+            setattr(booking, key, value)
     
-    # Agregar los nuevos servicios
-    for service_id in service_ids:
-        db.session.execute(booking_services.insert().values(
-            booking_id=booking_id,
-            service_id=service_id
-        ))
+    # Si se enviaron service_ids, actualizar los servicios
+    if service_ids is not None:
+        # Eliminar todas las relaciones anteriores
+        db.session.execute(
+            booking_services.delete().where(booking_services.c.booking_id == booking_id)
+        )
+        
+        # Agregar los nuevos servicios
+        for service_id in service_ids:
+            db.session.execute(booking_services.insert().values(
+                booking_id=booking_id,
+                service_id=service_id
+            ))
     
     db.session.commit()
+    
+    # Refrescar el objeto para obtener todos los datos actualizados
+    db.session.refresh(booking)
+    
     return jsonify(booking_schema.dump(booking))
 
 @booking_bp.route('/bookings/<int:booking_id>', methods=['DELETE'])

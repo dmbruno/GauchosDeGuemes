@@ -5,6 +5,9 @@ from extensions import db
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
 from datetime import datetime
 
+# Estados permitidos para las reservas
+BOOKING_STATUSES = ['solicitada', 'confirmada', 'cancelada']
+
 class Booking(db.Model):
     __tablename__ = "bookings"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -31,6 +34,7 @@ Booking.services = db.relationship('Service', secondary=booking_services, backre
 class BookingSchema(SQLAlchemyAutoSchema):
     client_id = auto_field()
     venue_id = auto_field()
+    status = auto_field()
     guests_count = auto_field()
     contact_preference = auto_field()
     event_type = auto_field()
