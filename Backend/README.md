@@ -426,140 +426,591 @@ Si no solicitaste este cambio, ignora este email.
 
 ---
 
-## 🌐 API Endpoints
+## 🌐 API Endpoints - Documentación Completa
 
-### **Base URL**
+### **URLs Base**
+
+**Producción:**
+```
+https://gauchos-backend.onrender.com/api
+```
+
+**Desarrollo:**
 ```
 http://localhost:5050/api
 ```
 
-### **Autenticación**
+### 🔧 **Configuración del Frontend**
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/auth/register` | Registrar usuario |
-| POST | `/auth/login` | Iniciar sesión |
-| GET | `/auth/verify` | Verificar token |
-| POST | `/auth/forgot-password` | Solicitar reset |
-| POST | `/auth/reset-password` | Resetear contraseña |
+Crea un archivo `.env` en tu proyecto frontend:
 
-### **Usuarios**
+```bash
+# Para Vite (React + Vite)
+VITE_API_URL=https://gauchos-backend.onrender.com/api
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/users` | Listar usuarios |
-| POST | `/users` | Crear usuario |
-| GET | `/users/<id>` | Obtener usuario |
-| PUT | `/users/<id>` | Actualizar usuario |
-| DELETE | `/users/<id>` | Eliminar usuario |
+# Para Create React App
+REACT_APP_API_URL=https://gauchos-backend.onrender.com/api
 
-### **Clientes**
+# Para Next.js
+NEXT_PUBLIC_API_URL=https://gauchos-backend.onrender.com/api
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/clients` | Listar clientes |
-| POST | `/clients` | Crear cliente |
-| GET | `/clients/<id>` | Obtener cliente |
-| PUT | `/clients/<id>` | Actualizar cliente |
-| DELETE | `/clients/<id>` | Eliminar cliente |
+# Para desarrollo local
+VITE_API_URL=http://localhost:5050/api
+```
 
-### **Reservas (Bookings)**
+### 🌐 **Dominios Permitidos (CORS)**
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/bookings` | Listar reservas |
-| POST | `/bookings` | Crear reserva |
-| GET | `/bookings/<id>` | Obtener reserva |
-| PUT | `/bookings/<id>` | Actualizar reserva |
-| DELETE | `/bookings/<id>` | Eliminar reserva |
-| GET | `/bookings/statuses` | Estados permitidos |
+Los siguientes dominios están autorizados para hacer peticiones:
+
+- ✅ `http://localhost:5173` (desarrollo local)
+- ✅ `http://localhost:5050` (desarrollo local)
+- ✅ `http://127.0.0.1:5173` (desarrollo local alternativo)
+- ✅ `http://127.0.0.1:5050` (desarrollo local alternativo)
+- ✅ `https://gestionreservas-gauchosguemes.onrender.com` (panel de gestión)
+- ✅ `https://ggeyc.netlify.app` (landing temporal)
+- ✅ `https://gauchosdeguemes.com.ar` (landing principal)
+- ✅ `https://www.gauchosdeguemes.com.ar` (landing con www)
+
+### 📚 **Endpoints Disponibles**
+
+#### 🔐 **Autenticación**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| POST | `/auth/register` | Registrar usuario | ❌ |
+| POST | `/auth/login` | Iniciar sesión | ❌ |
+| GET | `/auth/verify` | Verificar token | ✅ |
+| POST | `/auth/forgot-password` | Solicitar reset | ❌ |
+| POST | `/auth/reset-password` | Resetear contraseña | ❌ |
+
+**Ejemplo - Login:**
+```json
+POST /api/auth/login
+{
+  "email": "admin@gauchosguemes.com",
+  "password": "Admin123!"
+}
+
+Response:
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "username": "admin",
+    "email": "admin@gauchosguemes.com",
+    "is_admin": true
+  }
+}
+```
+
+**Ejemplo - Verificar Token:**
+```http
+GET /api/auth/verify
+Authorization: Bearer {token}
+
+Response:
+{
+  "valid": true,
+  "user": {
+    "id": 1,
+    "username": "admin",
+    "email": "admin@gauchosguemes.com"
+  }
+}
+```
+
+#### 👥 **Usuarios**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/users` | Listar usuarios | ✅ |
+| POST | `/users` | Crear usuario | ✅ |
+| GET | `/users/{id}` | Obtener usuario | ✅ |
+| PUT | `/users/{id}` | Actualizar usuario | ✅ |
+| DELETE | `/users/{id}` | Eliminar usuario | ✅ |
+
+**Ejemplo - Crear Usuario:**
+```json
+POST /api/users
+Authorization: Bearer {token}
+{
+  "username": "nuevo_usuario",
+  "email": "nuevo@example.com",
+  "password": "Password123!",
+  "is_admin": false
+}
+```
+
+#### 👤 **Clientes**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/clients` | Listar clientes | ✅ |
+| POST | `/clients` | Crear cliente | ✅ |
+| GET | `/clients/{id}` | Obtener cliente | ✅ |
+| PUT | `/clients/{id}` | Actualizar cliente | ✅ |
+| DELETE | `/clients/{id}` | Eliminar cliente | ✅ |
+
+**Ejemplo - Crear Cliente:**
+```json
+POST /api/clients
+Authorization: Bearer {token}
+{
+  "dni": "12345678",
+  "first_name": "Juan",
+  "last_name": "Pérez",
+  "phone": "+5493875051234",
+  "email": "juan@example.com"
+}
+```
+
+#### 📞 **Contacto / Leads**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/contact-leads` | Listar consultas | ✅ |
+| POST | `/contact-leads` | Enviar formulario | ❌ (público) |
+| GET | `/contact-leads/{id}` | Obtener consulta | ✅ |
+| PUT | `/contact-leads/{id}` | Actualizar consulta | ✅ |
+| DELETE | `/contact-leads/{id}` | Eliminar consulta | ✅ |
+
+**Ejemplo - Enviar Formulario (público):**
+```json
+POST /api/contact-leads
+{
+  "name": "Juan Pérez",
+  "email": "juan@example.com",
+  "phone": "+54 9 387 123-4567",
+  "message": "Consulta sobre alquiler de salón",
+  "lead_metadata": "landing-page"
+}
+```
+
+#### 🎉 **Servicios**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/services` | Listar servicios | ❌ (público) |
+| POST | `/services` | Crear servicio | ✅ |
+| GET | `/services/{id}` | Obtener servicio | ❌ (público) |
+| PUT | `/services/{id}` | Actualizar servicio | ✅ |
+| DELETE | `/services/{id}` | Eliminar servicio | ✅ |
+
+**Ejemplo - Obtener Servicios (público):**
+```json
+GET /api/services
+
+Response:
+[
+  {
+    "id": 1,
+    "name": "Catering",
+    "type": "Comida",
+    "details": "Disponemos de amplia variedad para que no falte nada en tu evento"
+  },
+  {
+    "id": 2,
+    "name": "Barra de Bebidas",
+    "type": "Bebidas",
+    "details": "Tenemos una barra super completa para que no te tengas que ocupar de esto durante tu evento"
+  }
+]
+```
+
+#### 🏛️ **Salones / Venues**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/venues` | Listar venues | ❌ (público) |
+| POST | `/venues` | Crear venue | ✅ |
+| GET | `/venues/{id}` | Obtener venue | ❌ (público) |
+| PUT | `/venues/{id}` | Actualizar venue | ✅ |
+| DELETE | `/venues/{id}` | Eliminar venue | ✅ |
+
+#### 📅 **Reservas**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/reservas` | Listar reservas | ✅ |
+| POST | `/reservas` | Crear reserva | ✅ |
+| GET | `/reservas/{id}` | Obtener reserva | ✅ |
+| PUT | `/reservas/{id}` | Actualizar reserva | ✅ |
+| DELETE | `/reservas/{id}` | Eliminar reserva | ✅ |
+| GET | `/reservas/statuses` | Estados permitidos | ✅ |
 
 **Estados de Reserva:**
 - `solicitada` - Estado inicial
 - `confirmada` - Reserva confirmada
 - `cancelada` - Reserva cancelada
 
-### **Servicios**
+**Ejemplo - Crear Reserva:**
+```json
+POST /api/reservas
+Authorization: Bearer {token}
+{
+  "client_id": 1,
+  "venue_id": 1,
+  "date": "2025-12-20T19:00:00",
+  "status": "solicitada",
+  "guests_count": 150,
+  "contact_preference": "WhatsApp",
+  "event_type": "Boda",
+  "other_services": "Decoración floral",
+  "service_ids": [1, 2]
+}
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/services` | Listar servicios |
-| POST | `/services` | Crear servicio |
-| GET | `/services/<id>` | Obtener servicio |
-| PUT | `/services/<id>` | Actualizar servicio |
-| DELETE | `/services/<id>` | Eliminar servicio |
+Response:
+{
+  "id": 1,
+  "client_id": 1,
+  "venue_id": 1,
+  "date": "2025-12-20T19:00:00",
+  "status": "solicitada",
+  "guests_count": 150,
+  "services": [
+    {"id": 1, "name": "Catering"},
+    {"id": 2, "name": "Barra de Bebidas"}
+  ],
+  "created_at": "2025-11-05T15:30:00"
+}
+```
 
-**Servicios Disponibles:**
-1. **Catering** - Comida para eventos
-2. **Barra de Bebidas** - Servicio de bar
+#### 🖼️ **Galería**
 
-### **Venues**
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/gallery-images` | Listar imágenes | ❌ (público) |
+| POST | `/gallery-images` | Crear imagen | ✅ |
+| GET | `/gallery-images/{id}` | Obtener imagen | ❌ (público) |
+| PUT | `/gallery-images/{id}` | Actualizar imagen | ✅ |
+| DELETE | `/gallery-images/{id}` | Eliminar imagen | ✅ |
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/venues` | Listar venues |
-| POST | `/venues` | Crear venue |
-| GET | `/venues/<id>` | Obtener venue |
-| PUT | `/venues/<id>` | Actualizar venue |
-| DELETE | `/venues/<id>` | Eliminar venue |
+#### 📝 **Logs de Auditoría**
 
-### **Galería**
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| GET | `/audit-logs` | Listar logs | ✅ |
+| POST | `/audit-logs` | Crear log | ✅ |
+| GET | `/audit-logs/{id}` | Obtener log | ✅ |
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/gallery-images` | Listar imágenes |
-| POST | `/gallery-images` | Crear imagen |
-| GET | `/gallery-images/<id>` | Obtener imagen |
-| PUT | `/gallery-images/<id>` | Actualizar imagen |
-| DELETE | `/gallery-images/<id>` | Eliminar imagen |
+### 💻 **Ejemplos de Integración**
 
-### **Leads de Contacto**
+#### **JavaScript Vanilla / Fetch API**
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/contact-leads` | Listar leads |
-| POST | `/contact-leads` | Crear lead |
-| GET | `/contact-leads/<id>` | Obtener lead |
-| PUT | `/contact-leads/<id>` | Actualizar lead |
-| DELETE | `/contact-leads/<id>` | Eliminar lead |
+```javascript
+// Configuración base
+const API_URL = 'https://gauchos-backend.onrender.com/api';
 
-### **Logs de Auditoría**
+// 1. Enviar formulario de contacto (público)
+async function sendContactForm(data) {
+  try {
+    const response = await fetch(`${API_URL}/contact-leads`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) throw new Error('Error al enviar formulario');
+    return await response.json();
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/audit-logs` | Listar logs |
-| POST | `/audit-logs` | Crear log |
-| GET | `/audit-logs/<id>` | Obtener log |
+// Uso:
+const formData = {
+  name: 'Juan Pérez',
+  email: 'juan@example.com',
+  phone: '+54 9 387 123-4567',
+  message: 'Consulta sobre eventos',
+  lead_metadata: 'landing-page'
+};
+
+sendContactForm(formData)
+  .then(result => console.log('Consulta enviada:', result))
+  .catch(error => console.error('Error:', error));
+
+// 2. Obtener servicios (público)
+async function getServices() {
+  const response = await fetch(`${API_URL}/services`);
+  return await response.json();
+}
+
+// 3. Login y obtener token
+async function login(email, password) {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  
+  const data = await response.json();
+  
+  // Guardar token
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('user', JSON.stringify(data.user));
+  
+  return data;
+}
+
+// 4. Peticiones protegidas con token
+async function getBookings() {
+  const token = localStorage.getItem('token');
+  
+  const response = await fetch(`${API_URL}/reservas`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  if (response.status === 401) {
+    localStorage.removeItem('token');
+    throw new Error('Sesión expirada');
+  }
+  
+  return await response.json();
+}
+
+// 5. Logout
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+}
+```
+
+#### **React / Axios**
+
+```javascript
+import axios from 'axios';
+
+// Crear instancia de axios
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'https://gauchos-backend.onrender.com/api',
+  headers: { 'Content-Type': 'application/json' }
+});
+
+// Interceptor para agregar token automáticamente
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Interceptor para manejar errores de autenticación
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Servicios organizados
+export const contactAPI = {
+  send: (data) => api.post('/contact-leads', data),
+  getAll: () => api.get('/contact-leads'),
+  getById: (id) => api.get(`/contact-leads/${id}`),
+  update: (id, data) => api.put(`/contact-leads/${id}`, data),
+  delete: (id) => api.delete(`/contact-leads/${id}`)
+};
+
+export const servicesAPI = {
+  getAll: () => api.get('/services'),
+  getById: (id) => api.get(`/services/${id}`),
+  create: (data) => api.post('/services', data),
+  update: (id, data) => api.put(`/services/${id}`, data),
+  delete: (id) => api.delete(`/services/${id}`)
+};
+
+export const authAPI = {
+  login: (credentials) => api.post('/auth/login', credentials),
+  register: (userData) => api.post('/auth/register', userData),
+  verify: () => api.get('/auth/verify'),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (token, password) => api.post('/auth/reset-password', { token, password })
+};
+
+export const bookingsAPI = {
+  getAll: () => api.get('/reservas'),
+  getById: (id) => api.get(`/reservas/${id}`),
+  create: (data) => api.post('/reservas', data),
+  update: (id, data) => api.put(`/reservas/${id}`, data),
+  delete: (id) => api.delete(`/reservas/${id}`),
+  getStatuses: () => api.get('/reservas/statuses')
+};
+
+// Ejemplo de uso en componente
+import { useState, useEffect } from 'react';
+import { servicesAPI } from './api';
+
+function ServicesPage() {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    servicesAPI.getAll()
+      .then(response => setServices(response.data))
+      .catch(error => console.error('Error:', error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Cargando...</div>;
+
+  return (
+    <div>
+      {services.map(service => (
+        <div key={service.id}>
+          <h3>{service.name}</h3>
+          <p>{service.details}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 🔒 **Autenticación y Seguridad**
+
+#### **Uso del Token JWT**
+
+Todos los endpoints protegidos requieren un token JWT en el header:
+
+```http
+Authorization: Bearer {tu_token_aqui}
+```
+
+#### **Flujo de Autenticación**
+
+1. **Login:** `POST /api/auth/login` → Obtienes token y datos de usuario
+2. **Guardar token:** En `localStorage` o `sessionStorage`
+3. **Usar token:** En cada petición protegida mediante header `Authorization`
+4. **Verificar token:** `GET /api/auth/verify` para validar que sigue activo
+5. **Logout:** Eliminar token del storage local
+
+#### **Tiempo de Expiración**
+
+- **Token JWT:** 24 horas
+- **Token de reset de contraseña:** 1 hora
+
+### ⚠️ **Manejo de Errores**
+
+#### **Códigos de Respuesta HTTP**
+
+- `200` - OK (éxito)
+- `201` - Created (creado exitosamente)
+- `400` - Bad Request (datos inválidos o faltantes)
+- `401` - Unauthorized (no autenticado o token inválido)
+- `403` - Forbidden (no tienes permisos)
+- `404` - Not Found (recurso no encontrado)
+- `500` - Internal Server Error (error del servidor)
+
+#### **Formato de Errores**
+
+```json
+{
+  "error": "Descripción del error"
+}
+```
+
+#### **Ejemplo de Manejo de Errores**
+
+```javascript
+try {
+  const response = await fetch(`${API_URL}/services`);
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Error en la petición');
+  }
+  
+  const data = await response.json();
+  console.log(data);
+  
+} catch (error) {
+  console.error('Error:', error.message);
+  alert(`Error: ${error.message}`);
+}
+```
+
+### 📝 **Notas Importantes**
+
+1. ✅ Todos los endpoints usan JSON (`Content-Type: application/json`)
+2. ✅ Las fechas están en formato ISO 8601: `YYYY-MM-DDTHH:MM:SS`
+3. ✅ Los endpoints públicos NO requieren autenticación:
+   - `GET /api/services`
+   - `GET /api/venues`
+   - `GET /api/gallery-images`
+   - `POST /api/contact-leads`
+4. ✅ Los endpoints protegidos requieren token JWT en el header
+5. ✅ Los tokens JWT expiran después de 24 horas
+6. ✅ Las contraseñas nunca se devuelven en las respuestas
+7. ✅ El backend usa PBKDF2-SHA256 para hashear contraseñas
+8. ✅ Estados de reserva permitidos: `solicitada`, `confirmada`, `cancelada`
 
 ---
 
 ## 🧪 Testing
 
-### **Usuarios de Prueba**
+### **Credenciales de Prueba**
 
 Después de ejecutar `seed_data.py`:
 
 | Username | Email | Password | Admin |
 |----------|-------|----------|-------|
-| admin | admin@example.com | admin123 | ✅ |
-| juan | juan@example.com | juan123 | ❌ |
+| admin | admin@gauchosguemes.com | Admin123! | ✅ |
+
+**Producción:**
+- URL: `https://gauchos-backend.onrender.com/api`
+- Panel: `https://gestionreservas-gauchosguemes.onrender.com`
+
+**Desarrollo:**
+- URL: `http://localhost:5050/api`
+- Frontend: `http://localhost:5173`
 
 ### **Testing con Postman/Thunder Client**
 
-#### **1. Login**
+#### **1. Login (Producción)**
 ```http
-POST http://localhost:5050/api/auth/login
+POST https://gauchos-backend.onrender.com/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@example.com",
-  "password": "admin123"
+  "email": "admin@gauchosguemes.com",
+  "password": "Admin123!"
 }
 ```
 
-#### **2. Crear Reserva (con token)**
+#### **2. Enviar Formulario de Contacto (público)**
 ```http
-POST http://localhost:5050/api/bookings
+POST https://gauchos-backend.onrender.com/api/contact-leads
+Content-Type: application/json
+
+{
+  "name": "Juan Pérez",
+  "email": "juan@example.com",
+  "phone": "+54 9 387 123-4567",
+  "message": "Consulta sobre alquiler",
+  "lead_metadata": "landing-page"
+}
+```
+
+#### **3. Obtener Servicios (público)**
+```http
+GET https://gauchos-backend.onrender.com/api/services
+```
+
+#### **4. Crear Reserva (con token)**
+```http
+POST https://gauchos-backend.onrender.com/api/reservas
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
@@ -573,46 +1024,14 @@ Content-Type: application/json
 }
 ```
 
-#### **3. Recuperar Contraseña**
+#### **5. Recuperar Contraseña**
 ```http
-POST http://localhost:5050/api/auth/forgot-password
+POST https://gauchos-backend.onrender.com/api/auth/forgot-password
 Content-Type: application/json
 
 {
-  "email": "admin@example.com"
+  "email": "admin@gauchosguemes.com"
 }
-```
-
-### **Testing Frontend (React)**
-
-```javascript
-// Ejemplo de integración
-const API_URL = 'http://localhost:5050/api';
-
-// Login
-const loginUser = async (email, password) => {
-  const response = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-  return response.json();
-};
-
-// Crear reserva
-const createBooking = async (bookingData) => {
-  const token = localStorage.getItem('token');
-  
-  const response = await fetch(`${API_URL}/bookings`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(bookingData)
-  });
-  return response.json();
-};
 ```
 
 ---
@@ -623,7 +1042,7 @@ const createBooking = async (bookingData) => {
 
 ✅ **Contraseñas Hasheadas** - PBKDF2-SHA256 con salt automático  
 ✅ **JWT con Expiración** - Tokens válidos por 24 horas  
-✅ **Reset Tokens** - Expiran en 1 hora, un solo uso  
+✅ **Reset Tokens** - Expirán en 1 hora, un solo uso  
 ✅ **CORS Configurado** - Solo orígenes permitidos  
 ✅ **Validación de Datos** - Campos requeridos, formatos de email  
 ✅ **SQL Injection Protection** - ORM SQLAlchemy  
@@ -749,206 +1168,9 @@ Booking (N) ─────── (N) Service  [Many-to-Many via booking_service
 
 ## 🚀 Deployment
 
-### **Preparación para Producción**
+### **Entorno de Producción Actual**
 
-1. **Cambiar a PostgreSQL**
-
-```python
-# .env
-SQLALCHEMY_DATABASE_URI=postgresql://user:password@localhost/gauchos_db
-```
-
-2. **Actualizar SECRET_KEY**
-
-```python
-# Generar clave segura
-import secrets
-print(secrets.token_hex(32))
-
-# .env
-SECRET_KEY=clave-generada-aleatoriamente
-```
-
-3. **Configurar Email de Producción**
-
-```env
-MAIL_SERVER=smtp.sendgrid.net
-MAIL_PORT=587
-MAIL_USERNAME=apikey
-MAIL_PASSWORD=tu-api-key-sendgrid
-FRONTEND_URL=https://tudominio.com
-```
-
-4. **Agregar Gunicorn**
-
-```bash
-pip install gunicorn
-```
-
-```bash
-# Iniciar con Gunicorn
-gunicorn -w 4 -b 0.0.0.0:5050 app:app
-```
-
-5. **Variables de Entorno de Producción**
-
-```env
-FLASK_ENV=production
-DEBUG=False
-SECRET_KEY=clave-super-segura-aleatoria
-SQLALCHEMY_DATABASE_URI=postgresql://...
-```
-
-### **Deployment en Heroku**
-
-```bash
-# Procfile
-web: gunicorn app:app
-
-# runtime.txt
-python-3.9.18
-
-# Desplegar
-heroku create gauchos-backend
-git push heroku main
-heroku config:set SECRET_KEY=tu-secret-key
-```
-
-### **Deployment en Railway**
-
-1. Conectar repositorio de GitHub
-2. Configurar variables de entorno
-3. Railway detectará automáticamente Flask
-4. Deploy automático en cada push
-
----
-
-## 📚 Documentación Adicional
-
-### **Estructura del Proyecto**
-
-```
-Backend/
-├── app.py                 # Aplicación principal
-├── extensions.py          # Inicialización de extensiones
-├── seed_data.py          # Datos de prueba
-├── requirements.txt      # Dependencias
-├── .env                  # Variables de entorno (no en Git)
-├── models/               # Modelos SQLAlchemy
-│   ├── user.py
-│   ├── client.py
-│   ├── booking.py
-│   ├── service.py
-│   ├── venue.py
-│   ├── gallery_image.py
-│   ├── contact_lead.py
-│   └── audit_log.py
-├── routes/               # Blueprints de rutas
-│   ├── auth.py
-│   ├── user_routes.py
-│   ├── client_routes.py
-│   ├── booking_routes.py
-│   ├── service_routes.py
-│   ├── venue_routes.py
-│   ├── gallery_image_routes.py
-│   ├── contact_lead_routes.py
-│   └── audit_log_routes.py
-└── instance/             # Base de datos SQLite
-    └── gauchos.db
-```
-
-### **Dependencias Completas**
-
-```txt
-Flask==3.1.2
-Flask-SQLAlchemy==3.1.1
-Flask-Marshmallow==1.3.0
-Flask-CORS==4.0.0
-Flask-Mail==0.10.0
-marshmallow-sqlalchemy==1.4.2
-PyJWT==2.10.1
-python-dotenv==1.1.1
-Werkzeug==3.1.3
-SQLAlchemy==2.0.43
-```
-
----
-
-## 🐛 Troubleshooting
-
-### **Error: Token expirado**
-```json
-{"error": "Token expirado"}
-```
-**Solución:** Vuelve a hacer login para obtener un nuevo token.
-
-### **Error: Email ya registrado**
-```json
-{"error": "El email ya está registrado"}
-```
-**Solución:** Usa otro email o actualiza el usuario existente.
-
-### **Error: Error al enviar email**
-```
-Error al enviar email: SMTPAuthenticationError
-```
-**Solución:** 
-- Verifica las credenciales en `.env`
-- Asegúrate de usar contraseña de aplicación en Gmail
-- Verifica que la verificación en 2 pasos esté activada
-
-### **Error: CORS**
-```
-Access to fetch has been blocked by CORS policy
-```
-**Solución:** Verifica que el origen esté en la lista de CORS en `app.py`.
-
-### **Error: Base de datos bloqueada**
-```
-sqlite3.OperationalError: database is locked
-```
-**Solución:** Cierra todas las conexiones o reinicia el servidor.
-
----
-
-## 👥 Contribuir
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
----
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más información.
-
----
-
-## 📞 Contacto
-
-**Diego Bruno** - [@dmbruno](https://github.com/dmbruno)
-
-**Link del Proyecto:** [https://github.com/dmbruno/GauchosDeGuemes](https://github.com/dmbruno/GauchosDeGuemes)
-
----
-
-## 🙏 Agradecimientos
-
-- Flask Documentation
-- JWT.io
-- SQLAlchemy
-- Marshmallow
-
----
-
-<div align="center">
-
-**Hecho con ❤️ para Gauchos De Güemes**
-
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge)
-![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)
-
-</div>
+✅ **Backend:** https://gauchos-backend.onrender.com  
+✅ **Panel de Gestión:** https://gestionreservas-gauchosguemes.onrender.com  
+✅ **Landing Page:** https://gauchosdeguemes.com.ar  
+✅ **Re
