@@ -16,16 +16,28 @@ app = Flask(__name__)
 # Configurar CORS
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:5173", "http://localhost:5050", "http://127.0.0.1:5173"],
+        "origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:5050",
+            "http://127.0.0.1:5050"
+        ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True
+        "supports_credentials": True,
+        "expose_headers": ["Content-Type", "Authorization"]
     }
 })
 
-# Configuración desde .env
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS') == 'True'
+# Configuración de base de datos (compatible con SQLite y PostgreSQL)
+database_url = os.getenv('DATABASE_URL') or os.getenv('SQLALCHEMY_DATABASE_URI')
+
+# Fix para Render: reemplazar postgres:// con postgresql://
+if database_url and database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', 'False') == 'True'
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Configuración de email
@@ -80,9 +92,6 @@ from models.booking import Booking
 from models.gallery_image import GalleryImage
 from models.contact_lead import ContactLead
 from models.audit_log import AuditLog
-
-# Crear carpeta instance si no existe
-os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 
 # Crear tablas siempre que se inicialice la app
 with app.app_context():
