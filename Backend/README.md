@@ -485,7 +485,7 @@ Content-Type: application/json
 ```
 
 **Respuesta (201):**
-```json
+```jsonn
 {
   "id": 1,
   "client_id": 1,
