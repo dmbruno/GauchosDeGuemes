@@ -21,7 +21,11 @@ CORS(app, resources={
             "http://127.0.0.1:5173",
             "http://localhost:5050",
             "http://127.0.0.1:5050",
-            "https://gestionreservas-gauchosguemes.onrender.com"
+            "https://gestionreservas-gauchosguemes.onrender.com",
+            "https://ggeyc.netlify.app",
+            "https://gauchosdeguemes.com.ar",  
+            "https://www.gauchosdeguemes.com.ar"
+            
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
