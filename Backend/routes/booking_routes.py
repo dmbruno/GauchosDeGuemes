@@ -4,6 +4,8 @@ CRUD endpoints for Booking entity.
 from flask import Blueprint, request, jsonify
 from models.booking import Booking, BookingSchema, booking_services, BOOKING_STATUSES
 from extensions import db
+from datetime import date
+
 
 booking_bp = Blueprint('booking_bp', __name__)
 booking_schema = BookingSchema()
@@ -107,3 +109,31 @@ def delete_booking(booking_id):
     db.session.delete(booking)
     db.session.commit()
     return '', 204
+
+
+
+@booking_bp.route('/bookings/reserved-dates', methods=['GET'])
+def get_reserved_dates():
+    """
+    Retorna una lista simple de fechas (YYYY-MM-DD) 
+    que ya están confirmadas, a partir de hoy.
+    """
+    
+    # ¡Importante! Filtramos solo las 'confirmadas'.
+    # No querrás bloquear una fecha si alguien solo "solicitó" pero no pagó.
+    query = (
+        db.session.query(Booking.date)
+        .filter(
+            Booking.status == 'confirmada',
+            Booking.date >= date.today()
+        )
+        .distinct() # Para que la fecha aparezca solo una vez
+    )
+    
+    # La consulta devuelve objetos de fecha/hora.
+    # Los convertimos a strings "YYYY-MM-DD" que tu frontend espera.
+    fechas = [
+        d[0].strftime('%Y-%m-%d') for d in query.all()
+    ]
+    
+    return jsonify(fechas)
