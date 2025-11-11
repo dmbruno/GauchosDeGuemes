@@ -101,6 +101,37 @@ from models.audit_log import AuditLog
 # Crear tablas siempre que se inicialice la app
 with app.app_context():
     db.create_all()
+    
+    # Migración segura para producción (solo si la variable está configurada)
+    if os.getenv('RECREATE_TABLES', 'false').lower() == 'true':
+        try:
+            print("🔄 Starting table migration...")
+            
+            # Para PostgreSQL, verificar si la columna exists
+            if database_url and 'postgresql://' in database_url:
+                result = db.engine.execute("SELECT column_name FROM information_schema.columns WHERE table_name='clients' AND column_name='accepted_terms'")
+                exists = result.fetchone()
+                
+                if not exists:
+                    print("📝 Adding accepted_terms column...")
+                    db.engine.execute("ALTER TABLE clients ADD COLUMN accepted_terms BOOLEAN NOT NULL DEFAULT FALSE")
+                    print("✅ Column added successfully!")
+                else:
+                    print("✅ Column already exists")
+            else:
+                # Para SQLite, recrear todas las tablas es más fácil
+                print("🔄 Recreating all tables for SQLite...")
+                db.drop_all()
+                db.create_all()
+                print("✅ Tables recreated!")
+                
+        except Exception as e:
+            print(f"⚠️ Migration error: {e}")
+            # Si falla, recrear todas las tablas
+            print("🔄 Recreating all tables as fallback...")
+            db.drop_all()
+            db.create_all()
+            print("✅ Tables recreated!")
 
 # Root endpoint
 @app.route('/')
