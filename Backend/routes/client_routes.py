@@ -18,6 +18,16 @@ def create_client():
     if existing_client:
         return jsonify({'error': 'Cliente con este DNI ya existe'}), 400
     
+    # Validación para términos y condiciones (si viene del frontend)
+    if 'accepted_terms' in data and not data.get('accepted_terms', False):
+        return jsonify({
+            'error': 'Debe aceptar los términos y condiciones para continuar'
+        }), 400
+    
+    # Si no viene accepted_terms (desde la app), poner False por defecto
+    if 'accepted_terms' not in data:
+        data['accepted_terms'] = False
+    
     client = client_schema.load(data, session=db.session)
     db.session.add(client)
     db.session.commit()

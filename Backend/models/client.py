@@ -10,9 +10,10 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     dni = db.Column(db.String(20), unique=True, nullable=False)
     first_name = db.Column(db.String(60), nullable=False)
-    last_name = db.Column(db.String(60), nullable=False)
+    last_name = db.Column(db.String(60), nullable=True)
     phone = db.Column(db.String(30), nullable=True)
     email = db.Column(db.String(120), nullable=True)
+    accepted_terms = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.DateTime)
 
 class ClientSchema(SQLAlchemyAutoSchema):
