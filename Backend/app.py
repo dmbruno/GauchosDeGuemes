@@ -121,6 +121,58 @@ def index():
         }
     })
 
+# Endpoint para inicializar datos semilla en producción
+@app.route('/admin/init-database', methods=['POST'])
+def init_database():
+    """Endpoint para inicializar la base de datos con datos semilla"""
+    from datetime import datetime
+    
+    try:
+        # Verificar si ya existe el usuario admin
+        existing_admin = User.query.filter_by(email="admin@gauchosguemes.com").first()
+        admin_created = False
+        
+        if not existing_admin:
+            # Crear usuario administrador
+            admin = User(
+                username="admin",
+                email="admin@gauchosguemes.com",
+                is_admin=True,
+                created_at=datetime.utcnow()
+            )
+            admin.set_password("Admin123!")
+            db.session.add(admin)
+            admin_created = True
+        
+        # Verificar si ya existe el venue
+        existing_venue = Venue.query.filter_by(name="Salon Gauchos de Guemes").first()
+        venue_created = False
+        
+        if not existing_venue:
+            # Crear venue inicial
+            venue = Venue(
+                name="Salon Gauchos de Guemes",
+                address="Circunvalacion Oeste Salta Capital",
+                created_at=datetime.utcnow()
+            )
+            db.session.add(venue)
+            venue_created = True
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Base de datos inicializada correctamente",
+            "admin_created": admin_created,
+            "venue_created": venue_created,
+            "admin_email": "admin@gauchosguemes.com",
+            "admin_password": "Admin123!",
+            "venue_name": "Salon Gauchos de Guemes"
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port=5050)
 
