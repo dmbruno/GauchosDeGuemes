@@ -121,6 +121,32 @@ def index():
         }
     })
 
+# Endpoint de test simple para verificar conexión a BD
+@app.route('/test-db', methods=['GET'])
+def test_db():
+    """Endpoint simple para probar la conexión a la base de datos"""
+    try:
+        from models.user import User
+        from models.venue import Venue
+        
+        # Probar conexión básica
+        user_count = User.query.count()
+        venue_count = Venue.query.count()
+        
+        return jsonify({
+            "message": "Conexión a BD exitosa",
+            "users_count": user_count,
+            "venues_count": venue_count,
+            "database_connected": True
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            "error": f"Error de BD: {str(e)}",
+            "type": type(e).__name__,
+            "database_connected": False
+        }), 500
+
 # Endpoint para inicializar datos semilla en producción
 @app.route('/admin/init-database', methods=['POST'])
 def init_database():
