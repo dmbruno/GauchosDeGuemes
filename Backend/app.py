@@ -127,12 +127,16 @@ def init_database():
     """Endpoint para inicializar la base de datos con datos semilla"""
     from datetime import datetime
     
+    print("🔥 DEBUG: Iniciando endpoint init_database")
+    
     try:
+        print("🔥 DEBUG: Buscando usuario admin existente")
         # Verificar si ya existe el usuario admin
         existing_admin = User.query.filter_by(email="admin@gauchosguemes.com").first()
         admin_created = False
         
         if not existing_admin:
+            print("🔥 DEBUG: Creando usuario admin")
             # Crear usuario administrador
             admin = User(
                 username="admin",
@@ -143,12 +147,17 @@ def init_database():
             admin.set_password("Admin123!")
             db.session.add(admin)
             admin_created = True
+            print("🔥 DEBUG: Usuario admin agregado a sesión")
+        else:
+            print(f"🔥 DEBUG: Usuario admin ya existe: {existing_admin.email}")
         
+        print("🔥 DEBUG: Buscando venue existente")
         # Verificar si ya existe el venue
         existing_venue = Venue.query.filter_by(name="Salon Gauchos de Guemes").first()
         venue_created = False
         
         if not existing_venue:
+            print("🔥 DEBUG: Creando venue")
             # Crear venue inicial
             venue = Venue(
                 name="Salon Gauchos de Guemes",
@@ -157,21 +166,30 @@ def init_database():
             )
             db.session.add(venue)
             venue_created = True
+            print("🔥 DEBUG: Venue agregado a sesión")
+        else:
+            print(f"🔥 DEBUG: Venue ya existe: {existing_venue.name}")
         
+        print("🔥 DEBUG: Haciendo commit a la base de datos")
         db.session.commit()
+        print("🔥 DEBUG: Commit exitoso")
         
-        return jsonify({
+        response_data = {
             "message": "Base de datos inicializada correctamente",
             "admin_created": admin_created,
             "venue_created": venue_created,
             "admin_email": "admin@gauchosguemes.com",
             "admin_password": "Admin123!",
             "venue_name": "Salon Gauchos de Guemes"
-        }), 200
+        }
+        
+        print(f"🔥 DEBUG: Respuesta preparada: {response_data}")
+        return jsonify(response_data), 200
         
     except Exception as e:
+        print(f"🔥 DEBUG: ERROR: {str(e)}")
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e), "debug": "Error en init_database"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port=5050)
