@@ -122,7 +122,7 @@ def index():
     })
 
 # Endpoint de test simple para verificar conexión a BD
-@app.route('/test-db', methods=['GET'])
+@app.route('/api/test-db', methods=['GET'])
 def test_db():
     """Endpoint simple para probar la conexión a la base de datos"""
     try:
@@ -148,7 +148,7 @@ def test_db():
         }), 500
 
 # Endpoint para inicializar datos semilla en producción
-@app.route('/admin/init-database', methods=['POST'])
+@app.route('/api/admin/init-database', methods=['POST'])
 def init_database():
     """Endpoint para inicializar la base de datos con datos semilla"""
     from datetime import datetime
