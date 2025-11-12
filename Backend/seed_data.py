@@ -40,7 +40,7 @@ with app.app_context():
         # Crear el venue inicial
         venue = Venue(
             name="Salon Gauchos de Guemes",
-            address="Circunvalacion Oeste Salta Capital",
+            address="Circunvalacion Oeste - Salta Capital",
             created_at=datetime.utcnow()
         )
         
