@@ -4,7 +4,7 @@ CRUD endpoints for Booking entity.
 from flask import Blueprint, request, jsonify
 from models.booking import Booking, BookingSchema, booking_services, BOOKING_STATUSES
 from extensions import db
-from datetime import date
+from datetime import date, datetime
 
 
 booking_bp = Blueprint('booking_bp', __name__)
@@ -19,6 +19,15 @@ def get_booking_statuses():
 @booking_bp.route('/bookings', methods=['POST'])
 def create_booking():
     data = request.get_json()
+    
+    # Convertir fecha de string ISO a datetime
+    if 'date' in data and isinstance(data['date'], str):
+        try:
+            # Parsear formato ISO: "2025-11-12T00:00:00.000Z" o "2025-11-12T00:00:00Z"
+            date_str = data['date'].replace('Z', '+00:00')
+            data['date'] = datetime.fromisoformat(date_str)
+        except ValueError as e:
+            return jsonify({'error': f'Formato de fecha inválido: {str(e)}'}), 400
     
     # Validar el status si está presente (por defecto será "solicitada")
     status = data.get('status', 'solicitada')
@@ -65,6 +74,15 @@ def update_booking(booking_id):
         return jsonify({'error': 'Booking not found'}), 404
     
     data = request.get_json()
+    
+    # Convertir fecha de string ISO a datetime
+    if 'date' in data and isinstance(data['date'], str):
+        try:
+            # Parsear formato ISO: "2025-11-12T00:00:00.000Z" o "2025-11-12T00:00:00Z"
+            date_str = data['date'].replace('Z', '+00:00')
+            data['date'] = datetime.fromisoformat(date_str)
+        except ValueError as e:
+            return jsonify({'error': f'Formato de fecha inválido: {str(e)}'}), 400
     
     # Validar el status si está presente
     if 'status' in data and data['status'] not in BOOKING_STATUSES:
